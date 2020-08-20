@@ -10,7 +10,6 @@ use crate::{cvt, cvt_p};
 /// A type used to derive a shared secret between two keys.
 pub struct Deriver<'a>(*mut ffi::EVP_PKEY_CTX, PhantomData<&'a ()>);
 
-unsafe impl<'a> Sync for Deriver<'a> {}
 unsafe impl<'a> Send for Deriver<'a> {}
 
 #[allow(clippy::len_without_is_empty)]
@@ -89,6 +88,14 @@ impl<'a> Deriver<'a> {
         let len = self.derive(&mut buf)?;
         buf.truncate(len);
         Ok(buf)
+    }
+}
+
+impl<'a> Drop for Deriver<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            ffi::EVP_PKEY_CTX_free(self.0);
+        }
     }
 }
 

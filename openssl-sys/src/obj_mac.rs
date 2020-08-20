@@ -928,3 +928,4 @@ pub const NID_sm3: c_int = 968;
 pub const NID_sm3WithRSAEncryption: c_int = 1144;
 #[cfg(libressl291)]
 pub const NID_sm3WithRSAEncryption: c_int = 969;
+pub const NID_hkdf: c_int = 1036;

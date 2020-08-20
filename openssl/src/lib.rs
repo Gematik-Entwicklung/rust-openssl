@@ -149,6 +149,7 @@ pub mod ex_data;
 #[cfg(not(libressl))]
 pub mod fips;
 pub mod hash;
+pub mod hkdf;
 pub mod memcmp;
 pub mod nid;
 #[cfg(not(osslconf = "OPENSSL_NO_OCSP"))]
