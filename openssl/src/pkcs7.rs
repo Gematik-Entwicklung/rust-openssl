@@ -4,16 +4,16 @@ use libc::c_int;
 use std::mem;
 use std::ptr;
 
+use crate::asn1::Asn1TimeRef;
 use crate::bio::{MemBio, MemBioSlice};
 use crate::error::ErrorStack;
+use crate::nid::Nid;
 use crate::pkey::{HasPrivate, PKeyRef};
 use crate::stack::{Stack, StackRef, Stackable};
 use crate::symm::Cipher;
 use crate::x509::store::X509StoreRef;
 use crate::x509::{X509Ref, X509};
 use crate::{cvt, cvt_p};
-use crate::nid::Nid;
-use crate::asn1::Asn1TimeRef;
 
 foreign_type_and_impl_send_sync! {
     type CType = ffi::PKCS7;
