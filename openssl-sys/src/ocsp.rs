@@ -105,4 +105,10 @@ extern "C" {
         st: *mut X509_STORE,
         flags: c_ulong,
     ) -> c_int;
+
+    pub fn OCSP_request_add1_nonce(
+        req: *mut OCSP_REQUEST,
+        val: *mut c_uchar,
+        len: c_int,
+    ) -> c_int;
 }
