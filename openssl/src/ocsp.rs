@@ -341,6 +341,14 @@ impl OcspRequestRef {
             Ok(OcspOneReqRef::from_ptr_mut(ptr))
         }
     }
+
+    pub fn add_nonce(&mut self) -> Result<(), ErrorStack> {
+        unsafe {
+            cvt(ffi::OCSP_request_add1_nonce(self.as_ptr(), ptr::null_mut(), 0))?;
+
+            Ok(())
+        }
+    }
 }
 
 foreign_type_and_impl_send_sync! {

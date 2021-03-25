@@ -362,7 +362,7 @@ impl CmsSignerInfoRef {
 
             let type_ = cvt_p(ffi::X509_ATTRIBUTE_get0_type(attr, 0))?;
             let type_ = ffi::ASN1_TYPE_get(type_);
-            match dbg!(type_) {
+            match type_ {
                 ffi::V_ASN1_UTCTIME | ffi::V_ASN1_GENERALIZEDTIME => (),
                 _ => return Err(ErrorStack::get()),
             }
