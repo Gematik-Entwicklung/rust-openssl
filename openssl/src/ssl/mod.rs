@@ -95,7 +95,9 @@ use crate::ssl::bio::BioMethod;
 use crate::ssl::callbacks::*;
 use crate::ssl::error::InnerError;
 use crate::stack::{Stack, StackRef};
-use crate::util::{ForeignTypeExt, ForeignTypeRefExt};
+use crate::util::{ForeignTypeRefExt};
+#[cfg(not(ossl300))]
+use crate::util::ForeignTypeExt;
 use crate::x509::store::{X509Store, X509StoreBuilderRef, X509StoreRef};
 #[cfg(any(ossl102, libressl261))]
 use crate::x509::verify::X509VerifyParamRef;
@@ -2679,6 +2681,7 @@ impl SslRef {
     /// This corresponds to [`SSL_get_peer_certificate`].
     ///
     /// [`SSL_get_peer_certificate`]: https://www.openssl.org/docs/man1.1.0/ssl/SSL_get_peer_certificate.html
+    #[cfg(not(ossl300))]
     pub fn peer_certificate(&self) -> Option<X509> {
         unsafe {
             let ptr = ffi::SSL_get_peer_certificate(self.as_ptr());

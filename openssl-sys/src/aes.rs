@@ -14,9 +14,13 @@ pub struct AES_KEY {
 }
 
 extern "C" {
+    #[cfg(not(ossl300))]
     pub fn AES_set_encrypt_key(userKey: *const c_uchar, bits: c_int, key: *mut AES_KEY) -> c_int;
+
+    #[cfg(not(ossl300))]
     pub fn AES_set_decrypt_key(userKey: *const c_uchar, bits: c_int, key: *mut AES_KEY) -> c_int;
 
+    #[cfg(not(ossl300))]
     pub fn AES_ige_encrypt(
         in_: *const c_uchar,
         out: *mut c_uchar,
@@ -26,6 +30,7 @@ extern "C" {
         enc: c_int,
     );
 
+    #[cfg(not(ossl300))]
     pub fn AES_wrap_key(
         key: *mut AES_KEY,
         iv: *const c_uchar,
@@ -34,6 +39,7 @@ extern "C" {
         inlen: c_uint,
     ) -> c_int;
 
+    #[cfg(not(ossl300))]
     pub fn AES_unwrap_key(
         key: *mut AES_KEY,
         iv: *const c_uchar,

@@ -32,6 +32,7 @@ pub struct ERR_STRING_DATA {
 }
 
 extern "C" {
+    #[cfg(not(ossl300))]
     pub fn ERR_put_error(lib: c_int, func: c_int, reason: c_int, file: *const c_char, line: c_int);
     pub fn ERR_set_error_data(data: *mut c_char, flags: c_int);
 

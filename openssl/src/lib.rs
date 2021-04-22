@@ -146,7 +146,7 @@ pub mod encrypt;
 pub mod envelope;
 pub mod error;
 pub mod ex_data;
-#[cfg(not(libressl))]
+#[cfg(all(not(libressl), not(ossl300)))]
 pub mod fips;
 pub mod hash;
 pub mod hkdf;

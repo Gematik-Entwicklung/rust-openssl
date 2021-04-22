@@ -21,55 +21,35 @@ pub fn get_openssl(target: &str) -> (PathBuf, PathBuf) {
     }
 }
 
-fn resolve_with_wellknown_homebrew_location(dir: &str) -> Option<PathBuf> {
-    // Check up default aarch 64 Homebrew installation location first
-    // for quick resolution if possible.
-    //  `pkg-config` on brew doesn't necessarily contain settings for openssl apparently.
-    let homebrew = Path::new(dir).join("opt/openssl@1.1");
-    if homebrew.exists() {
-        return Some(homebrew);
-    }
-
-    // Calling `brew --prefix <package>` command usually slow and
-    // takes seconds, and will be used only as a last resort.
-    let output = execute_command_and_get_output("brew", &["--prefix", "openssl@1.1"]);
-    if let Some(ref output) = output {
-        let homebrew = Path::new(&output);
-        if homebrew.exists() {
-            return Some(homebrew.to_path_buf());
-        }
-    }
-
-    None
-}
-
-fn resolve_with_wellknown_location(dir: &str) -> Option<PathBuf> {
-    let root_dir = Path::new(dir);
-    let include_openssl = root_dir.join("include/openssl");
-    if include_openssl.exists() {
-        Some(root_dir.to_path_buf())
-    } else {
-        None
-    }
-}
-
 fn find_openssl_dir(target: &str) -> OsString {
     let host = env::var("HOST").unwrap();
 
-    if host == target && target.ends_with("-apple-darwin") {
-        let homebrew_dir = match target {
-            "aarch64-apple-darwin" => "/opt/homebrew",
-            _ => "/usr/local",
-        };
-
-        if let Some(dir) = resolve_with_wellknown_homebrew_location(homebrew_dir) {
-            return dir.into();
-        } else if let Some(dir) = resolve_with_wellknown_location("/opt/pkg") {
-            // pkgsrc
-            return dir.into();
-        } else if let Some(dir) = resolve_with_wellknown_location("/opt/local") {
-            // MacPorts
-            return dir.into();
+    if host == target && target.contains("apple-darwin") {
+        // Check up default Homebrew installation location first
+        // for quick resolution if possible.
+        let homebrew = Path::new("/usr/local/opt/openssl@1.1");
+        if homebrew.exists() {
+            return homebrew.to_path_buf().into();
+        }
+        let homebrew = Path::new("/usr/local/opt/openssl");
+        if homebrew.exists() {
+            return homebrew.to_path_buf().into();
+        }
+        // Calling `brew --prefix <package>` command usually slow and
+        // takes seconds, and will be used only as a last resort.
+        let output = execute_command_and_get_output("brew", &["--prefix", "openssl@1.1"]);
+        if let Some(ref output) = output {
+            let homebrew = Path::new(&output);
+            if homebrew.exists() {
+                return homebrew.to_path_buf().into();
+            }
+        }
+        let output = execute_command_and_get_output("brew", &["--prefix", "openssl"]);
+        if let Some(ref output) = output {
+            let homebrew = Path::new(&output);
+            if homebrew.exists() {
+                return homebrew.to_path_buf().into();
+            }
         }
     }
 
@@ -117,11 +97,14 @@ openssl-sys = {}
             msg.push_str(
                 "
 
-openssl-sys crate build failed: no supported version of OpenSSL found.
+It looks like you're compiling on macOS, where the system contains a version of
+OpenSSL 0.9.8. This crate no longer supports OpenSSL 0.9.8.
 
-Ways to fix it:
-- Use the `vendored` feature of openssl-sys crate to build OpenSSL from source.
-- Use Homebrew to install the `openssl` package.
+As a consumer of this crate, you can fix this error by using Homebrew to
+install the `openssl` package, or as a maintainer you can use the openssl-sys
+0.7 crate for support with OpenSSL 0.9.8.
+
+Unfortunately though the compile cannot continue, so aborting.
 
 ",
             );

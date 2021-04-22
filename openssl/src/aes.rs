@@ -55,9 +55,12 @@
 //! assert_eq!(&orig_key[..], &key_to_wrap[..]);
 //! ```
 //!
+#[cfg(not(ossl300))]
 use libc::{c_int, c_uint};
+#[cfg(not(ossl300))]
 use std::{mem, ptr};
 
+#[cfg(not(ossl300))]
 use crate::symm::Mode;
 
 /// Provides Error handling for parsing keys.
@@ -73,6 +76,7 @@ impl AesKey {
     /// # Failure
     ///
     /// Returns an error if the key is not 128, 192, or 256 bits.
+    #[cfg(not(ossl300))]
     #[allow(deprecated)] // https://github.com/rust-lang/rust/issues/63566
     pub fn new_encrypt(key: &[u8]) -> Result<AesKey, KeyError> {
         unsafe {
@@ -97,6 +101,7 @@ impl AesKey {
     /// # Failure
     ///
     /// Returns an error if the key is not 128, 192, or 256 bits.
+    #[cfg(not(ossl300))]
     #[allow(deprecated)] // https://github.com/rust-lang/rust/issues/63566
     pub fn new_decrypt(key: &[u8]) -> Result<AesKey, KeyError> {
         unsafe {
@@ -136,6 +141,7 @@ impl AesKey {
 ///
 /// Panics if `in_` is not the same length as `out`, if that length is not a multiple of 16, or if
 /// `iv` is not at least 32 bytes.
+#[cfg(not(ossl300))]
 pub fn aes_ige(in_: &[u8], out: &mut [u8], key: &AesKey, iv: &mut [u8], mode: Mode) {
     unsafe {
         assert!(in_.len() == out.len());
@@ -170,6 +176,7 @@ pub fn aes_ige(in_: &[u8], out: &mut [u8], key: &AesKey, iv: &mut [u8], mode: Mo
 ///
 /// Panics if either `out` or `in_` do not have sizes that are a multiple of 8, or if
 /// `out` is not 8 bytes longer than `in_`
+#[cfg(not(ossl300))]
 pub fn wrap_key(
     key: &AesKey,
     iv: Option<[u8; 8]>,
@@ -208,6 +215,7 @@ pub fn wrap_key(
 ///
 /// Panics if either `out` or `in_` do not have sizes that are a multiple of 8, or
 /// if `in_` is not 8 bytes longer than `out`
+#[cfg(not(ossl300))]
 pub fn unwrap_key(
     key: &AesKey,
     iv: Option<[u8; 8]>,

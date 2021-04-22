@@ -42,8 +42,12 @@ impl ErrorStack {
 
     /// Pushes the errors back onto the OpenSSL error stack.
     pub fn put(&self) {
-        for error in self.errors() {
-            error.put();
+        // TODO: put back error to openssl
+        #[cfg(not(ossl300))]
+        {
+            for error in self.errors() {
+                error.put();
+            }
         }
     }
 }
@@ -138,6 +142,7 @@ impl Error {
     }
 
     /// Pushes the error back onto the OpenSSL error stack.
+    #[cfg(not(ossl300))]
     pub fn put(&self) {
         unsafe {
             ffi::ERR_put_error(

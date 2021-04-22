@@ -46,6 +46,8 @@ bitflags! {
         const KEY_PARAM = ffi::CMS_KEY_PARAM;
         #[cfg(all(not(libressl), not(ossl101), not(ossl102)))]
         const ASCIICRLF = ffi::CMS_ASCIICRLF;
+        #[cfg(ossl300)]
+        const CADES = ffi::CMS_CADES;
     }
 }
 
