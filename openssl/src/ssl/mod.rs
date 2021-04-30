@@ -95,9 +95,9 @@ use crate::ssl::bio::BioMethod;
 use crate::ssl::callbacks::*;
 use crate::ssl::error::InnerError;
 use crate::stack::{Stack, StackRef};
-use crate::util::{ForeignTypeRefExt};
 #[cfg(not(ossl300))]
 use crate::util::ForeignTypeExt;
+use crate::util::ForeignTypeRefExt;
 use crate::x509::store::{X509Store, X509StoreBuilderRef, X509StoreRef};
 #[cfg(any(ossl102, libressl261))]
 use crate::x509::verify::X509VerifyParamRef;
