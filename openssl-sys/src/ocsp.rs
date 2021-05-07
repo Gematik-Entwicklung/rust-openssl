@@ -57,6 +57,7 @@ const_ptr_api! {
 extern "C" {
     pub fn OCSP_request_add0_id(r: *mut OCSP_REQUEST, id: *mut OCSP_CERTID) -> *mut OCSP_ONEREQ;
 
+    pub fn OCSP_resp_get0_certs(bs: *const OCSP_BASICRESP) -> *const stack_st_X509;
     pub fn OCSP_resp_find_status(
         bs: *mut OCSP_BASICRESP,
         id: *mut OCSP_CERTID,

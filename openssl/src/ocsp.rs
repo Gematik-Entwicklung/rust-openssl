@@ -149,6 +149,17 @@ foreign_type_and_impl_send_sync! {
 }
 
 impl OcspBasicResponseRef {
+    pub fn certs(&self) -> Option<&StackRef<X509>> {
+        unsafe {
+            let ptr = ffi::OCSP_resp_get0_certs(self.as_ptr());
+            if !ptr.is_null() {
+                Some(StackRef::from_ptr(ptr as *mut ffi::stack_st_X509))
+            } else {
+                None
+            }
+        }
+    }
+
     /// Verifies the validity of the response.
     ///
     /// The `certs` parameter contains a set of certificates that will be searched when locating the
