@@ -595,6 +595,23 @@ impl X509Ref {
         }
     }
 
+    pub fn get_extension(&self, oid: &Asn1ObjectRef) -> Result<Option<&X509ExtensionRef>, ErrorStack> {
+        unsafe {
+            let ptr = self.as_ptr();
+            let oid = oid.as_ptr();
+
+            let pos = ffi::X509_get_ext_by_OBJ(ptr, oid, -1);
+            if pos < 0 {
+                return Ok(None);
+            }
+
+            let ext_ptr = ffi::X509_get_ext(ptr, pos);
+            let ext_ptr = cvt_p(ext_ptr)?;
+
+            Ok(Some(X509ExtensionRef::from_ptr(ext_ptr)))
+        }
+    }
+
     to_pem! {
         /// Serializes the certificate into a PEM-encoded X509 structure.
         ///
@@ -806,6 +823,26 @@ impl X509Extension {
             let value = value.as_ptr() as *mut _;
 
             cvt_p(ffi::X509V3_EXT_nconf_nid(conf, context, name, value)).map(X509Extension)
+        }
+    }
+}
+
+impl X509ExtensionRef {
+    pub fn get_data(&self) -> Option<&[u8]> {
+        unsafe {
+            let ptr = self.as_ptr();
+            let data = ffi::X509_EXTENSION_get_data(ptr);
+            if data.is_null() {
+                return None;
+            }
+
+            let raw = ffi::ASN1_STRING_get0_data(data as *const ffi::ASN1_STRING);
+            let len = ffi::ASN1_STRING_length(data as *const ffi::ASN1_STRING);
+            if len <= 0 || data.is_null() {
+                return None;
+            }
+
+            Some(slice::from_raw_parts(raw, len as usize))
         }
     }
 }
