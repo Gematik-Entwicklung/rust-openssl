@@ -87,6 +87,14 @@ extern "C" {
     pub fn ASN1_TIME_set_string(s: *mut ASN1_TIME, str: *const c_char) -> c_int;
     #[cfg(ossl111)]
     pub fn ASN1_TIME_set_string_X509(s: *mut ASN1_TIME, str: *const c_char) -> c_int;
+
+    pub fn ASN1_OCTET_STRING_new() -> *mut ASN1_OCTET_STRING;
+    pub fn ASN1_OCTET_STRING_free(s: *mut ASN1_OCTET_STRING);
+    pub fn ASN1_OCTET_STRING_set(
+        s: *mut ASN1_OCTET_STRING,
+        data: *const c_uchar,
+        len: c_int,
+    ) -> c_int;
 }
 
 const_ptr_api! {

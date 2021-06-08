@@ -595,7 +595,10 @@ impl X509Ref {
         }
     }
 
-    pub fn get_extension(&self, oid: &Asn1ObjectRef) -> Result<Option<&X509ExtensionRef>, ErrorStack> {
+    pub fn get_extension(
+        &self,
+        oid: &Asn1ObjectRef,
+    ) -> Result<Option<&X509ExtensionRef>, ErrorStack> {
         unsafe {
             let ptr = self.as_ptr();
             let oid = oid.as_ptr();
@@ -823,6 +826,29 @@ impl X509Extension {
             let value = value.as_ptr() as *mut _;
 
             cvt_p(ffi::X509V3_EXT_nconf_nid(conf, context, name, value)).map(X509Extension)
+        }
+    }
+
+    pub fn from_obj(obj: &Asn1ObjectRef, data: &[u8]) -> Result<X509Extension, ErrorStack> {
+        unsafe {
+            let obj = obj.as_ptr();
+
+            let s = cvt_p(ffi::ASN1_OCTET_STRING_new())?;
+            if ffi::ASN1_OCTET_STRING_set(s, data.as_ptr(), data.len() as i32) <= 0 {
+                ffi::ASN1_OCTET_STRING_free(s);
+
+                return Err(ErrorStack::get());
+            }
+
+            let ret = ffi::X509_EXTENSION_create_by_OBJ(ptr::null_mut(), obj, 0, s);
+
+            ffi::ASN1_OCTET_STRING_free(s);
+
+            if !ret.is_null() {
+                Ok(X509Extension(ret))
+            } else {
+                Err(ErrorStack::get())
+            }
         }
     }
 }
